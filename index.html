@@ -4,17 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Loan Repayment App</title>
-  <script>
-        // Get the current date
-        const today = new Date();
-
-        // Format the date (e.g., "Month Day, Year")
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        const formattedDate = today.toLocaleDateString('en-US', options);
-
-        // Insert the formatted date into the HTML element
-        document.getElementById('current-date').textContent = formattedDate;
-    </script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -100,6 +89,17 @@
   </style>
 </head>
 <body>
+    <script>
+        // Get the current date
+        const today = new Date();
+
+        // Format the date (e.g., "Month Day, Year")
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const formattedDate = today.toLocaleDateString('en-US', options);
+
+        // Insert the formatted date into the HTML element
+        document.getElementById('current-date').textContent = formattedDate;
+    </script>
   <!-- Repay Page -->
   <div id="repayPage" class="page active">
     <div class="title">Repay Amount</div>
